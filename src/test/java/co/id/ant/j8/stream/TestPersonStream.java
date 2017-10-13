@@ -16,10 +16,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import jdk.nashorn.internal.objects.NativeArray;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
 
 public class TestPersonStream {
 
@@ -142,6 +142,7 @@ public class TestPersonStream {
         .collect(Collectors.toList());
 
     listOfPeopleWithFullnameAndEmail.forEach(PersonUtil::printPersonFullnameAndEmailInJsonFormat);
+
     listOfPeopleWithFullnameAndEmail.forEach(
         aPerson-> Assert.assertNotNull(aPerson.getFullNameAndEmail())
     );
@@ -200,5 +201,21 @@ public class TestPersonStream {
           });
         }
     );
+  }
+
+
+  @Test
+  public void testGetTotalAgeUsingReduce(){
+
+    int totalAgeOfPeople = people.stream()
+        .mapToInt((aPerson) -> {
+          return aPerson.getAge();
+        })
+        .reduce(0, (a, b) -> {
+          return a + b;
+        });
+
+    Assert.assertEquals(45949, totalAgeOfPeople);
+
   }
 }
