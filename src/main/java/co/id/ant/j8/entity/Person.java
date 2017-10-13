@@ -2,19 +2,18 @@ package co.id.ant.j8.entity;
 
 public class Person {
 
-  private Long id;
-
+  private Integer id;
   private String firstName;
   private String lastName;
   private String email;
   private String gender;
   private String ipAddress;
 
-  public Long getId() {
+  public Integer getId() {
     return id;
   }
 
-  public void setId(Long id) {
+  public void setId(Integer id) {
     this.id = id;
   }
 
