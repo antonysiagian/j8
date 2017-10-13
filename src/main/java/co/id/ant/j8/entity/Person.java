@@ -8,6 +8,7 @@ public class Person {
   private String email;
   private String gender;
   private String ipAddress;
+  private Integer age;
 
   public Integer getId() {
     return id;
@@ -55,5 +56,13 @@ public class Person {
 
   public void setIpAddress(String ipAddress) {
     this.ipAddress = ipAddress;
+  }
+
+  public Integer getAge() {
+    return age;
+  }
+
+  public void setAge(Integer age) {
+    this.age = age;
   }
 }

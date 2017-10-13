@@ -144,5 +144,17 @@ public class TestPersonStream {
     );
 
   }
-  
+
+  @Test
+  public void testAverageAgeOfpeople(){
+
+    double averageAgeOfPeople = people
+        .stream().mapToInt((aPerson)->{return aPerson.getAge();})
+        .average()
+        .getAsDouble();
+
+    System.out.println(averageAgeOfPeople);
+    Assert.assertTrue(45.949 == averageAgeOfPeople);
+  }
+
 }
