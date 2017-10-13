@@ -9,11 +9,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -91,5 +91,34 @@ public class TestPersonStream {
 
     Assert.assertEquals(1000, maxIdOfPeople);
   }
+
+
+  @Test
+  public void testDisctinctUsingStream(){
+
+    List<Person> listOfDuplicatePerson = new ArrayList<Person>();
+    listOfDuplicatePerson.addAll(people);
+    listOfDuplicatePerson.addAll(people);
+
+    Assert.assertEquals(2000, listOfDuplicatePerson.size());
+
+    //using distinct function
+    List<Person> listOfUniquePerson = listOfDuplicatePerson
+        .stream()
+        .distinct()
+        .collect(Collectors.toList());
+
+    Assert.assertEquals(1000, listOfUniquePerson.size());
+
+    //using collectors
+    Set<Person> setOfUniquePerson = listOfDuplicatePerson
+        .stream()
+        .collect(Collectors.toSet());
+
+    Assert.assertEquals(1000, setOfUniquePerson.size());
+  }
+
+  
+
 
 }
