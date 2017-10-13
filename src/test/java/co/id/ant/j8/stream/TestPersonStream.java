@@ -12,9 +12,11 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.IntSummaryStatistics;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import jdk.nashorn.internal.objects.NativeArray;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -146,6 +148,7 @@ public class TestPersonStream {
 
   }
 
+
   @Test
   public void testAverageAgeOfpeople(){
 
@@ -158,6 +161,7 @@ public class TestPersonStream {
     Assert.assertTrue(45.949 == averageAgeOfPeople);
 
   }
+
 
   @Test
   public void testGatheringStatisticsOfStream(){
@@ -172,7 +176,29 @@ public class TestPersonStream {
     Assert.assertEquals(45949, statistics.getSum());
     Assert.assertEquals( 16, statistics.getMin());
     Assert.assertEquals( 77, statistics.getMax());
+
   }
 
 
+  @Test
+  public void testGroupingPeopleByAge(){
+
+    Map<Integer, List<Person>> mapOfPeopleByAge = people
+        .stream()
+        .collect(Collectors.groupingBy(Person::getAge));
+
+    Assert.assertEquals(62, mapOfPeopleByAge.keySet().size());
+
+    //print the grouping result
+    mapOfPeopleByAge.forEach(
+        (age, listOfPersonByAge)->{
+          listOfPersonByAge.forEach((aPerson)->{
+            System.out.println(
+                "Person with age "
+                    .concat(String.valueOf(age)).concat(":")
+                    .concat(PersonUtil.getJsonFormatFromPerson(aPerson)));
+          });
+        }
+    );
+  }
 }
