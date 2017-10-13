@@ -218,4 +218,17 @@ public class TestPersonStream {
     Assert.assertEquals(45949, totalAgeOfPeople);
 
   }
+
+  @Test
+  public void testIntermediateAndTerminalOperation(){
+
+    people.stream().filter(
+        (aPerson)->{
+          System.out.println("when is this text printout?"); //The answer is when you execute terminal operation (calling 'collect')
+          return aPerson.getAge() < 20;
+        }
+      ).collect(Collectors.toList());
+
+  }
+
 }
