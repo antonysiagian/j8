@@ -1,6 +1,7 @@
 package co.id.ant.j8.stream;
 
 import co.id.ant.j8.entity.Person;
+import co.id.ant.j8.entity.PersonFullNameAndEmail;
 import co.id.ant.j8.util.PersonUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -9,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,6 +37,7 @@ public class TestPersonStream {
 
   }
 
+
   @Test
   public void testFindPersonWithFirstNameStartFromA(){
 
@@ -50,6 +51,7 @@ public class TestPersonStream {
     peopleWhoisNameStartWithA.forEach(person -> Assert.assertTrue(person.getFirstName().startsWith("A")));
 
   }
+
 
   @Test
   public void testRangeWithPersonStream(){
@@ -68,6 +70,7 @@ public class TestPersonStream {
 
   }
 
+
   @Test
   public void testFindingSmallestIdOfPeople(){
 
@@ -80,6 +83,7 @@ public class TestPersonStream {
     Assert.assertEquals(1, mininumIdOfPeople);
 
   }
+
 
   @Test
   public void testFindingBiggestIdofPeople(){
@@ -118,7 +122,27 @@ public class TestPersonStream {
     Assert.assertEquals(1000, setOfUniquePerson.size());
   }
 
+
+  @Test
+  public void testMapOnPersonStreamFromPersonToPersonFullNameAndEmail(){
+
+    List<PersonFullNameAndEmail> listOfPeopleWithFullnameAndEmail =  people
+        .stream()
+        .map(
+              (aPerson)->{
+                return new PersonFullNameAndEmail(
+                  aPerson.getFirstName(),
+                  aPerson.getLastName(),
+                  aPerson.getEmail());
+              }
+            )
+        .collect(Collectors.toList());
+
+    listOfPeopleWithFullnameAndEmail.forEach(PersonUtil::printPersonFullnameAndEmailInJsonFormat);
+    listOfPeopleWithFullnameAndEmail.forEach(
+        aPerson-> Assert.assertNotNull(aPerson.getFullNameAndEmail())
+    );
+
+  }
   
-
-
 }

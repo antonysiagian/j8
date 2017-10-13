@@ -1,6 +1,7 @@
 package co.id.ant.j8.util;
 
 import co.id.ant.j8.entity.Person;
+import co.id.ant.j8.entity.PersonFullNameAndEmail;
 import com.google.gson.Gson;
 
 public class PersonUtil {
@@ -12,6 +13,10 @@ public class PersonUtil {
   }
 
   public static void printPersonInJsonFormat(Person person){
+    System.out.println(personInGson.toJson(person));
+  }
+
+  public static void printPersonFullnameAndEmailInJsonFormat(PersonFullNameAndEmail person){
     System.out.println(personInGson.toJson(person));
   }
 }
