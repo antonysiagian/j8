@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -155,6 +156,23 @@ public class TestPersonStream {
 
     System.out.println(averageAgeOfPeople);
     Assert.assertTrue(45.949 == averageAgeOfPeople);
+
   }
+
+  @Test
+  public void testGatheringStatisticsOfStream(){
+
+    IntSummaryStatistics statistics = people
+        .stream()
+        .mapToInt((aPerson)->{return aPerson.getAge();})
+        .summaryStatistics();
+
+    Assert.assertTrue( 45.949 == statistics.getAverage());
+    Assert.assertEquals(1000, statistics.getCount());
+    Assert.assertEquals(45949, statistics.getSum());
+    Assert.assertEquals( 16, statistics.getMin());
+    Assert.assertEquals( 77, statistics.getMax());
+  }
+
 
 }
