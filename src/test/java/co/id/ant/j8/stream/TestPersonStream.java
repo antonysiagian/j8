@@ -276,11 +276,11 @@ public class TestPersonStream {
     listOfPeople.add(TestPersonStream.peopleWhoAreBetween25YearsOldUpTo50YearOld);
     listOfPeople.add(TestPersonStream.peopleWhoAreBetween50YearsOldUpTo100YearsOld);
 
-    List<Person> theResultOfJoiningThreeListOnMapOfPeople = listOfPeople
+    List<Person> resultOfJoiningList = listOfPeople
         .stream()
         .flatMap((aGroupOfPeople) -> aGroupOfPeople.stream()).collect(Collectors.toList());
 
-    Assert.assertEquals(1000, theResultOfJoiningThreeListOnMapOfPeople.size());
+    Assert.assertEquals(1000, resultOfJoiningList.size());
 
   }
 }
