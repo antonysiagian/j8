@@ -10,12 +10,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +26,9 @@ import org.junit.Test;
 public class TestPersonStream {
 
   private static List<Person> people = new ArrayList<Person>();
+  private static List<Person> peopleWhoAreLessThan25YearsOld;
+  private static List<Person> peopleWhoAreBetween25YearsOldUpTo50YearOld;
+  private static List<Person> peopleWhoAreBetween50YearsOldUpTo100YearsOld;
 
   @Before
   public void loadTestData() throws IOException{
@@ -35,7 +40,32 @@ public class TestPersonStream {
       Gson gson = new Gson();
       TypeToken<List<Person>> typeOfListPerson = new TypeToken<List<Person>>() {
       };
+
       people = gson.fromJson(arrayOfPeople, typeOfListPerson.getType());
+
+      peopleWhoAreLessThan25YearsOld =
+          people
+              .stream()
+              .filter((aPerson)-> {
+                return aPerson.getAge() < 25;})
+              .collect(Collectors.toList());
+
+
+      peopleWhoAreBetween25YearsOldUpTo50YearOld =
+          people
+              .stream()
+              .filter((aPerson)-> {
+                int age = aPerson.getAge();
+                return age > 24 && age < 50;})
+              .collect(Collectors.toList());
+
+      peopleWhoAreBetween50YearsOldUpTo100YearsOld =
+          people
+              .stream()
+              .filter((aPerson)-> {
+                int age = aPerson.getAge();
+                return age > 49 && age < 100;})
+              .collect(Collectors.toList());
     }
 
   }
@@ -218,17 +248,39 @@ public class TestPersonStream {
     Assert.assertEquals(45949, totalAgeOfPeople);
 
   }
+  
 
   @Test
   public void testIntermediateAndTerminalOperation(){
 
-    people.stream().filter(
-        (aPerson)->{
-          System.out.println("when is this text printout?"); //The answer is when you execute terminal operation (calling 'collect')
+    List<Person> youngPeople = people.stream().filter(
+        (aPerson) -> {
+          System.out.println(
+              "when is this text printout?"
+          ); //when you execute terminal operation (calling 'collect')
           return aPerson.getAge() < 20;
         }
-      ).collect(Collectors.toList());
+    ).collect(Collectors.toList());
+
+    youngPeople.forEach(aPerson-> Assert.assertTrue(aPerson.getAge() <  20 ));
 
   }
 
+
+  @Test
+  public void testFlatMapToJoinListOfPersonList() {
+
+    //let's create a list consist of list people who already grouped to three groups
+    List<List<Person>> listOfPeople = new ArrayList<List<Person>>();
+    listOfPeople.add(TestPersonStream.peopleWhoAreLessThan25YearsOld);
+    listOfPeople.add(TestPersonStream.peopleWhoAreBetween25YearsOldUpTo50YearOld);
+    listOfPeople.add(TestPersonStream.peopleWhoAreBetween50YearsOldUpTo100YearsOld);
+
+    List<Person> theResultOfJoiningThreeListOnMapOfPeople = listOfPeople
+        .stream()
+        .flatMap((aGroupOfPeople) -> aGroupOfPeople.stream()).collect(Collectors.toList());
+
+    Assert.assertEquals(1000, theResultOfJoiningThreeListOnMapOfPeople.size());
+
+  }
 }
