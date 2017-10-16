@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.IntSummaryStatistics;
 import java.util.List;
@@ -317,6 +318,20 @@ public class TestPersonStream {
 
     //assert that parallel stream is faster comparing to casual stream to execute computation
     Assert.assertTrue(executionTimeForCasualStream  > executionTimeForParallelStream);
+
+  }
+
+  @Test
+  public void testJoiningStingUsingStream(){
+
+    List<String>  listOfString = Arrays.asList("He", "She", "is", "a", "beautiful", "girl");
+
+    String resultOfJoiningString = listOfString
+        .stream()
+        .filter(aString -> !aString.equals("He"))
+        .collect(Collectors.joining(" "));
+
+    Assert.assertEquals("She is a beautiful girl", resultOfJoiningString);
 
   }
 
