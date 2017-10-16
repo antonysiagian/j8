@@ -15,6 +15,7 @@ import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.Assert;
@@ -28,6 +29,15 @@ public class TestPersonStream {
   private static List<Person> peopleWhoAreLessThan25YearsOld;
   private static List<Person> peopleWhoAreBetween25YearsOldUpTo50YearOld;
   private static List<Person> peopleWhoAreBetween50YearsOldUpTo100YearsOld;
+
+
+  private final Predicate<Person> checkIfPersonIsLessThan25YearsOld =
+      (aPerson) -> {return aPerson.getAge() < 25;};
+  private final Predicate<Person> checkIfPersonBetween25YearsOldUpTo50YearOld  =
+      (aPerson) -> {int age = aPerson.getAge(); return age >  24 && age < 50;};
+  private final Predicate<Person> checkIfPersonBetween50YearsOldUpTo100YearsOld =
+      (aPerson) -> {int age = aPerson.getAge(); return age >  49 && age < 100;};
+
 
   @Before
   public void loadTestData() throws IOException{
@@ -45,25 +55,21 @@ public class TestPersonStream {
       peopleWhoAreLessThan25YearsOld =
           people
               .stream()
-              .filter((aPerson)-> {
-                return aPerson.getAge() < 25;})
+              .filter(checkIfPersonIsLessThan25YearsOld)
               .collect(Collectors.toList());
 
 
       peopleWhoAreBetween25YearsOldUpTo50YearOld =
           people
               .stream()
-              .filter((aPerson)-> {
-                int age = aPerson.getAge();
-                return age > 24 && age < 50;})
+              .filter(checkIfPersonBetween25YearsOldUpTo50YearOld)
               .collect(Collectors.toList());
+
 
       peopleWhoAreBetween50YearsOldUpTo100YearsOld =
           people
               .stream()
-              .filter((aPerson)-> {
-                int age = aPerson.getAge();
-                return age > 49 && age < 100;})
+              .filter(checkIfPersonBetween50YearsOldUpTo100YearsOld)
               .collect(Collectors.toList());
     }
 
@@ -73,14 +79,16 @@ public class TestPersonStream {
   @Test
   public void testFindPersonWithFirstNameStartFromA(){
 
+    Predicate<Person> personWhoIsNameStartWithA =
+        (aPerson) -> {return aPerson.getFirstName().startsWith("A");};
+
     List<Person> peopleWhoisNameStartWithA = people
         .stream()
-        .filter(aPerson -> {
-          return aPerson.getFirstName().startsWith("A");
-        })
+        .filter(personWhoIsNameStartWithA)
         .collect(Collectors.toList());
 
-    peopleWhoisNameStartWithA.forEach(person -> Assert.assertTrue(person.getFirstName().startsWith("A")));
+    peopleWhoisNameStartWithA.forEach(
+        person -> Assert.assertTrue(person.getFirstName().startsWith("A")));
 
   }
 
@@ -108,7 +116,7 @@ public class TestPersonStream {
 
     int mininumIdOfPeople = people
         .stream()
-        .mapToInt((aPerson)->{return aPerson.getId();})
+        .mapToInt(Person::getId)
         .min()
         .getAsInt();
 
@@ -121,7 +129,7 @@ public class TestPersonStream {
   public void testFindingBiggestIdofPeople(){
 
     int maxIdOfPeople = people.stream()
-        .mapToInt((aPerson) -> {return aPerson.getId();})
+        .mapToInt(Person::getId)
         .max()
         .getAsInt();
 
@@ -132,14 +140,14 @@ public class TestPersonStream {
   @Test
   public void testDisctinctUsingStream(){
 
-    List<Person> listOfDuplicatePerson = new ArrayList<Person>();
-    listOfDuplicatePerson.addAll(people);
-    listOfDuplicatePerson.addAll(people);
+    List<Person> listConsistOfDuplicatePerson = new ArrayList<Person>();
+    listConsistOfDuplicatePerson.addAll(people);
+    listConsistOfDuplicatePerson.addAll(people);
 
-    Assert.assertEquals(2000, listOfDuplicatePerson.size());
+    Assert.assertEquals(2000, listConsistOfDuplicatePerson.size());
 
     //using distinct function
-    List<Person> listOfUniquePerson = listOfDuplicatePerson
+    List<Person> listOfUniquePerson = listConsistOfDuplicatePerson
         .stream()
         .distinct()
         .collect(Collectors.toList());
@@ -147,7 +155,7 @@ public class TestPersonStream {
     Assert.assertEquals(1000, listOfUniquePerson.size());
 
     //using collectors
-    Set<Person> setOfUniquePerson = listOfDuplicatePerson
+    Set<Person> setOfUniquePerson = listConsistOfDuplicatePerson
         .stream()
         .collect(Collectors.toSet());
 
@@ -176,7 +184,8 @@ public class TestPersonStream {
   public void testAverageAgeOfpeople(){
 
     double averageAgeOfPeople = people
-        .stream().mapToInt((aPerson)->{return aPerson.getAge();})
+        .stream()
+        .mapToInt(Person::getAge)
         .average()
         .getAsDouble();
 
@@ -191,7 +200,7 @@ public class TestPersonStream {
 
     IntSummaryStatistics statistics = people
         .stream()
-        .mapToInt((aPerson)->{return aPerson.getAge();})
+        .mapToInt(Person::getAge)
         .summaryStatistics();
 
     Assert.assertTrue( 45.949 == statistics.getAverage());
@@ -212,17 +221,6 @@ public class TestPersonStream {
 
     Assert.assertEquals(62, mapOfPeopleByAge.keySet().size());
 
-    //print the grouping result
-    mapOfPeopleByAge.forEach(
-        (age, listOfPersonByAge)->{
-          listOfPersonByAge.forEach((aPerson)->{
-            System.out.println(
-                "Person with age "
-                    .concat(String.valueOf(age)).concat(":")
-                    .concat(PersonUtil.getJsonFormatFromPerson(aPerson)));
-          });
-        }
-    );
   }
 
 
@@ -230,9 +228,7 @@ public class TestPersonStream {
   public void testGetTotalAgeUsingReduce(){
 
     int totalAgeOfPeople = people.stream()
-        .mapToInt((aPerson) -> {
-          return aPerson.getAge();
-        })
+        .mapToInt(Person::getAge)
         .reduce(0, (a, b) -> {
           return a + b;
         });
@@ -287,6 +283,7 @@ public class TestPersonStream {
 
   }
 
+
   @Test
   public void testComparingPerformanceBetweenParallelStreamAndCasualStream(){
 
@@ -311,6 +308,7 @@ public class TestPersonStream {
 
   }
 
+
   @Test
   public void testJoiningStingUsingStream(){
 
@@ -330,9 +328,7 @@ public class TestPersonStream {
   public void testUsingOptionalWhenConditionIsNotFulfilled(){
     people.stream()
         .filter(aPerson -> aPerson.getAge() > 200)
-        .mapToInt(
-            (aPerson)-> {return aPerson.getAge()}
-        );
+        .mapToInt(Person::getAge);
   }
 
 }
