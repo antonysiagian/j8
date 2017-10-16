@@ -14,7 +14,7 @@ public class PersonUtil {
   }
 
   public static void printPersonInJsonFormat(Person person){
-    System.out.println(gson.toJson(person));
+    System.out.println("ThreadID: "+ Thread.currentThread().getId() +", Person: "+ gson.toJson(person));
   }
 
   public static void printPersonFullnameAndEmailInJsonFormat(PersonFullNameAndEmail person){

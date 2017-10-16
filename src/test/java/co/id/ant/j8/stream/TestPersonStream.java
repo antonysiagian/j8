@@ -15,6 +15,7 @@ import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -283,4 +284,40 @@ public class TestPersonStream {
     Assert.assertEquals(1000, resultOfJoiningList.size());
 
   }
+
+
+  @Test
+  public void testPrintPersonIdUsingParallelStream(){
+
+    people.parallelStream().parallel()
+        .forEach((aPerson) -> {
+          PersonUtil.printPersonInJsonFormat(aPerson);
+    });
+
+  }
+
+  @Test
+  public void testComparingPerformanceBetweenParallelStreamAndCasualStream(){
+
+    //create inclusive list from 0  to 10000000
+    List<Integer> numbers = IntStream.range(0, 10000000).boxed().collect(Collectors.toList());
+
+    long beforeExecuteCasualStream = System.nanoTime();
+    int totalNumberFromCasualStream = numbers.stream().reduce(0, Integer::sum);
+    long executionTimeForCasualStream = System.nanoTime()  - beforeExecuteCasualStream;
+
+
+    long beforeExecuteParallelStream = System.nanoTime();
+    int totalNumberFromParallelStream = numbers.parallelStream().reduce(0, Integer::sum);
+    long executionTimeForParallelStream = System.nanoTime()  - beforeExecuteParallelStream;
+
+    System.out.println(
+        "Execution time from casual stream: " + executionTimeForCasualStream +
+            ", parallel stream:" + executionTimeForParallelStream);
+
+    //assert that parallel stream is faster comparing to casual stream to execute computation
+    Assert.assertTrue(executionTimeForCasualStream  > executionTimeForParallelStream);
+
+  }
+
 }
