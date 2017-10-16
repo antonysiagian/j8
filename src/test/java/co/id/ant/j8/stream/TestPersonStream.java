@@ -11,15 +11,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -163,14 +160,7 @@ public class TestPersonStream {
 
     List<PersonFullNameAndEmail> listOfPeopleWithFullnameAndEmail =  people
         .stream()
-        .map(
-              (aPerson)->{
-                return new PersonFullNameAndEmail(
-                  aPerson.getFirstName(),
-                  aPerson.getLastName(),
-                  aPerson.getEmail());
-              }
-            )
+        .map(PersonFullNameAndEmail::new)
         .collect(Collectors.toList());
 
     listOfPeopleWithFullnameAndEmail.forEach(PersonUtil::printPersonFullnameAndEmailInJsonFormat);
@@ -333,6 +323,16 @@ public class TestPersonStream {
 
     Assert.assertEquals("She is a beautiful girl", resultOfJoiningString);
 
+  }
+
+
+  @Test
+  public void testUsingOptionalWhenConditionIsNotFulfilled(){
+    people.stream()
+        .filter(aPerson -> aPerson.getAge() > 200)
+        .mapToInt(
+            (aPerson)-> {return aPerson.getAge()}
+        );
   }
 
 }
